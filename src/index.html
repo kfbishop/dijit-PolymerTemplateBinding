@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Dijit-TemplateBinding Test</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="stylesheet" href="dojo/resources/dojo.css">
+    <link rel="stylesheet" href="dijit/themes/claro/claro.css">
+
+    <!-- Load Polymer-TemplateBinding and deps :: Not AMD compatible -->
+    <script src="polymer/TemplateBinding/load.js"></script>
+    <script data-dojo-config="async: true, parseOnLoad:true" src="dojo/dojo.js"></script>
+
+    <script type="text/javascript">
+        require([
+            "app/ButtonsPTW",
+            "dojo/domReady!"
+        ]);
+    </script>
+</head>
+<body class="claro" style="padding:10px;">
+
+    <div data-dojo-type="app/ButtonsPTW"></div>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<div>
+<template bind>
+	<style>
+	h1, h2  { margin-bottom: 8px;  }
+	.blue   { color: blue;         }
+	.red    { color: red;          }
+	</style>
+
+	<h1 class="{{ headerClass }}">{{ nls.title }}</h1>
+
+	<button data-dojo-type="dijit/form/Button" type="button"
+		data-dojo-attach-event="onClick:daeAddButton">
+		{{ nls.addButton }}
+	</button>
+	&nbsp;	&nbsp;	&nbsp;
+	<button data-dojo-type="dijit/form/Button" type="button"
+		data-dojo-attach-event="onClick:daeChangeColor">
+		{{ nls.changeColor }}
+	</button>
+	<br/><br/>
+
+	<template repeat="{{ buttons }}">
+	    <button data-dojo-type="dijit/form/Button" type="button"
+		    data-dojo-props="onClick:this.{{action}}">
+		    {{ label }}
+		</button>
+	</template>
+
+	<br/><br/>
+	<button data-dojo-type="dijit/form/Button" type="button"
+		data-dojo-attach-event="onClick:daeToggleH2">
+		{{ nls.toggleH2 }}
+	</button>
+	hideHeader = {{ hideHeader }}
+	<h2 hidden?="{{ hideHeader }}">Can you see me?</h2>
+
+</template>
+</div>

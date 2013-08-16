@@ -1,0 +1,45 @@
+<div>
+	<template bind>
+	<style>
+	h1, h2 {
+		color: {{ headerColor }};
+	}
+	</style>
+	  <h1>{{ nls.title }}</h1>
+		<br/><hr/><br/>
+		<h2>Buttons</h2>
+	    <button data-dojo-type="dijit/form/Button" type="button"
+		    data-dojo-attach-event="onClick:daeAddButton">
+		    Add Button
+		</button><br/><br/>
+
+		<template repeat="{{ buttons }}">
+		    <button data-dojo-type="dijit/form/Button" type="button"
+			    data-dojo-props="onClick:this.{{action}}">
+			    {{ label }}
+			</button>
+		</template>
+
+		<br/><hr/><br/>
+		<h2>{{ nls.values }}</h2>
+		<ul>
+			<li>Horizontal:  {{ data.horizontal1 }}</li>
+		</ul>
+
+	  <label>Horizontal Slider Example</label>
+	  <div data-dojo-type="dijit/form/HorizontalSlider"
+	  	data-dojo-attach-point="dapHorizontal1"
+	  	data-dojo-props='name:"horizontal1",
+		  	value               : {{ data.horizontal1 }},
+		  	maximum             : 100,
+	  		minimum             : 0,
+		  	intermediateChanges : false,
+		  	discreteValues      : 100,
+		  	style               : {width:"50%", height:"20px"}
+	  	'>
+	 		<div data-dojo-type="dijit/form/HorizontalRule"
+	 			data-dojo-props='container:"topDecoration", count:20, style:{height:"5px"}'></div>
+	  </div>
+
+	</template>
+</div>
