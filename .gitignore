@@ -1,2 +1,4 @@
 
-**/.DS_Store
+# Junk OSX files
+[Tt]humbs.db
+*.DS_Store
