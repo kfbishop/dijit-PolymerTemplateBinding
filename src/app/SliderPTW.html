@@ -1,29 +1,9 @@
 <div>
 	<template bind>
-	<style>
-	h1, h2 {
-		color: {{ headerColor }};
-	}
-	</style>
 	  <h1>{{ nls.title }}</h1>
-		<br/><hr/><br/>
-		<h2>Buttons</h2>
-	    <button data-dojo-type="dijit/form/Button" type="button"
-		    data-dojo-attach-event="onClick:daeAddButton">
-		    Add Button
-		</button><br/><br/>
-
-		<template repeat="{{ buttons }}">
-		    <button data-dojo-type="dijit/form/Button" type="button"
-			    data-dojo-props="onClick:this.{{action}}">
-			    {{ label }}
-			</button>
-		</template>
-
-		<br/><hr/><br/>
 		<h2>{{ nls.values }}</h2>
 		<ul>
-			<li>Horizontal:  {{ data.horizontal1 }}</li>
+			<li>Horizontal:  <input value='{{ data.horizontal1 }}'/></li>
 		</ul>
 
 	  <label>Horizontal Slider Example</label>

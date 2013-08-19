@@ -148,3 +148,23 @@ This would mean that these values must be set at:
 - Set in `constructor()` (pre-mixin), or in `postMixInProperties()`
 
 
+Outstanding Issues
+------------------
+
+There are quite a few issues that still need to be resoved.
+
+## Binding Dijit values
+
+The top-most issue deals with binding specific values within declarative dijits inside of <tempaltes>.  We can _seed_ values and other variables when instantiating these dijits, but then the binding is lost.  I'm working on a way to define a map of bind keys with dijits. This can be explored in the SliderPTW dijit. In the controller we define a map like shown below:
+
+	this.modelDijitBinding = {
+		"data.horizontal1" : {
+			dijit       : "dapHorizontal1",
+			member      : "value"
+		}
+	};
+
+In theory we want the "data.horizontal1" bind key to directly map the resulting dapHorizontal1 dijit attach point's value attribute.   In the PolymerTemplateWidget base class, we attmept to use observe-js :: PathObserver objects to watch for changes and react.  At this point, its not working.  I may try to use a templatebinding delegate to achieve similar solution.
+
+
+
