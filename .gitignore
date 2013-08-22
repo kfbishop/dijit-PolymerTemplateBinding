@@ -2,3 +2,9 @@
 # Junk OSX files
 [Tt]humbs.db
 *.DS_Store
+
+.DS_Store
+
+src/polymer/.DS_Store
+
+src/polymer/.DS_Store

@@ -40,7 +40,9 @@ define([
 		constructor: function() {
 			this.modelDijitBinding = {};
 
-			aspect.before(this, "postCreate", lang.hitch(this, this._ptwWidgetBinding) );
+			this.own(
+				aspect.after(this, "postCreate", lang.hitch(this, this._ptwWidgetBinding) )
+			);
 		},
 
 		//-----------------------------------------------------------
@@ -75,62 +77,65 @@ define([
 
 		//-----------------------------------------------------------
 		_ptwWidgetBinding : function() {
-			//-- Fires pre-parsing!
+			// summary:
+			//		Maps dijit to binding (d2b) and binding to dijit (b2d)
+			// description:
+			//		In situations where you have decalrative dijits within a
+			//		<template>, you can seed values using {{ binding }}, but
+			//		the binding is lost once the dijit is created. Use a
+			//		custom Model to Dijit Binding map (this.modelDijitBinding)
+			//		to define the model key and its desired bound dijit member.
+			//		The modelDijitBinding expects a local reference (attachpoint)
+			//		for the dijit target, so the mapping should be defined in the
+			//		postCreate() function.
+			// example:
+			//	|	this.modelDijitBinding = {
+			//	|		"data.slider1" : { dijit:"dapslider1", member:"value" },
+			//	|		"data.slider2" : "dapslider2"
+			//	|	};
+			//		In the above example, the dijit can be either a string naming
+			//		the attachpoint, or a map of dijit:'attacpoint', member:'name'.
+			//		Member defaults to 'value' if not defined.
 			var F = MODULE + ":_ptwWidgetBinding:";
+			var mdb, key, dijit, d2b, b2d;
 			console.log(F,"Binding Widgets");
-			for( var key in this.modelDijitBinding ) {
+
+			for( key in this.modelDijitBinding ) {
 				console.log(F,"Key:", key);
-				var mdb = this.modelDijitBinding[key];
-				var dijit = this[ mdb.dijit ];
-				//-- Setup dijit to model binding
-				var d2b = new PathObserver(dijit, mdb.member, function(newValue, oldValue) {
-					console.log(F,"d2b: fired", newValue, oldValue);
-					if ( newValue !== oldValue ) {
-						console.log(F,"d2b: ", dijit, mdb.member, newValue, oldValue);
-						key = newValue;
-						Platform.performMicrotaskCheckpoint();
+				mdb = this.modelDijitBinding[key];
+				if ( typeof mdb === "string" ) {
+					mdb = { dijit:mdb, member:"value" };
+				}
+				dijit = this[ mdb.dijit ];
+				member = mdb.member || "value";
+
+				var d2bHandler = (function(key) {
+			        return function(newValue, oldValue) {
+						if ( newValue !== oldValue ) {
+							console.log(F,"d2b: ", key, newValue, oldValue);
+							lang.setObject(key, newValue, this);
+							Platform.performMicrotaskCheckpoint();
+						}
 					}
-				});
-				var b2d = new PathObserver(this, key, function(newValue, oldValue) {
-					console.log(F,"b2d: fired", oldValue, newValue);
-					if ( newValue !== oldValue ) {
-						console.log(F,"b2d: ", this, key, newValue, oldValue);
-						dijit.set(mdb.member, newValue);
-						Platform.performMicrotaskCheckpoint();
+			    })(key);
+
+		    	var b2dHandler = (function(key, dijit, member) {
+		            return function(newValue, oldValue) {
+						if ( newValue !== oldValue ) {
+							console.log(F,"b2d: ", key, newValue, oldValue);
+							dijit.set(member, newValue);
+							Platform.performMicrotaskCheckpoint();
+						}
 					}
-				});
+		        })(key, dijit, member);
+
+				d2b = new PathObserver(dijit, member, lang.hitch(this, d2bHandler) );
+				b2d = new PathObserver(this , key   , lang.hitch(this, b2dHandler) );
+
+				this.own(
+					aspect.after( dijit, "onChange", Platform.performMicrotaskCheckpoint)
+				);
 			}
-		},
-
-		//-----------------------------------------------------------
-		_ptwModelBinding : function(model, path, name, node) {
-			//-- Fires pre-parsing!
-			var F = MODULE + ":_ptwModelBinding:";
-			console.log(F,"Starting", arguments);
-			if ( path && path in this.modelDijitBinding ) {
-				console.log(F,"CUSTOM BINDING:  ", arguments);
-				var d = this.modelDijitBinding[ path ];
-				var binding = new CompoundBinding(function(values) {
-					console.log(F,"CUSTOM BINDING 2: ", values);
-		  	      return d.get("value");
-			      });
-			      binding.bind(path, model, path);
-						return binding;
-					}
-
-				// 	// if ( node.nodeType && node.nodeType !== 3 ) {
-				// 	// 	var dijit = registry.byNode(node);
-				// 	// 	if (dijit) {
-				// 	// 		var p = path.match(/value/i);
-				// 	// 		var binding = new CompoundBinding(function(values) {
-				// 	// 			console.log("CUSTOM BINDING 2: ", values);
-				//  //        return this.dapHorizontal1.get("value");
-				//  //      });
-				//  //      binding.bind('data.horizontal1', model, path);
-				// 	//     return binding;
-				// 	//   }
-				// 	// }
-			return;
 		},
 
 		//-----------------------------------------------------------
@@ -154,19 +159,21 @@ define([
 				    }
 				  });
 				};
-				aspect.after( Platform, "performMicrotaskCheckpoint", lang.hitch(this, function() {
-					//checkForUnparsedDijits(this.domNode);
-					var options = {propsThis:this};
-					parser.scan(this.domNode, options).then(function(nodes) {
-						var toBeInstatiated = array.filter(nodes, function(n) {
-							return !domAttr.has(n, "widgetid");
+				this.own(
+					aspect.after( Platform, "performMicrotaskCheckpoint", lang.hitch(this, function() {
+						//checkForUnparsedDijits(this.domNode);
+						var options = {propsThis:this};
+						parser.scan(this.domNode, options).then(function(nodes) {
+							var toBeInstatiated = array.filter(nodes, function(n) {
+								return !domAttr.has(n, "widgetid");
+							});
+							if (toBeInstatiated.length) {
+						    	console.log(F, "REPARSE: dijit nodes to be parsed: ", toBeInstatiated);
+							    parser._instantiate(toBeInstatiated, {}, options, false);
+							}
 						});
-						if (toBeInstatiated.length) {
-					    	console.log(F, "REPARSE: dijit nodes to be parsed: ", toBeInstatiated);
-						    parser._instantiate(toBeInstatiated, {}, options, false);
-						}
-					});
-				}));
+					}))
+				);
 			}
 		}
 

@@ -1,25 +1,50 @@
 <div>
 	<template bind>
 	  <h1>{{ nls.title }}</h1>
+
+	  	<button data-dojo-type="dijit/form/Button" type="button"
+	  		data-dojo-attach-event="onClick:daeToggleAutoUpdates">
+	  		{{ nls.autoUpdates }}
+	  	</button>
+
 		<h2>{{ nls.values }}</h2>
 		<ul>
-			<li>Horizontal:  <input value='{{ data.horizontal1 }}'/></li>
+			<li>Slider 1:  <input value='{{ data.slider1 }}'/></li>
+			<li>Slider 2:  <input value='{{ data.slider2 }}'/></li>
 		</ul>
 
-	  <label>Horizontal Slider Example</label>
-	  <div data-dojo-type="dijit/form/HorizontalSlider"
-	  	data-dojo-attach-point="dapHorizontal1"
-	  	data-dojo-props='name:"horizontal1",
-		  	value               : {{ data.horizontal1 }},
-		  	maximum             : 100,
-	  		minimum             : 0,
-		  	intermediateChanges : false,
-		  	discreteValues      : 100,
-		  	style               : {width:"50%", height:"20px"}
+		<label>Slider 1</label><br/>
+		<div data-dojo-type="dijit/form/HorizontalSlider"
+		  	data-dojo-attach-point="dapslider1"
+		  	data-dojo-props='
+		  	    name                : "slider1",
+			  	value               : {{ data.slider1 }},
+			  	maximum             : 100,
+		  		minimum             : 1,
+			  	intermediateChanges : false,
+			  	discreteValues      : 100,
+			  	style               : {width:"50%", height:"20px"}
 	  	'>
 	 		<div data-dojo-type="dijit/form/HorizontalRule"
-	 			data-dojo-props='container:"topDecoration", count:20, style:{height:"5px"}'></div>
-	  </div>
+	 			data-dojo-props='container:"topDecoration", count:50, style:{height:"5px"}'></div>
+		</div>
+
+		<br/><br/>
+	    <label>Slider 2</label><br/>
+	    <div data-dojo-type="dijit/form/HorizontalSlider"
+	    	data-dojo-attach-point="dapslider2"
+	    	data-dojo-props='
+	    	    name                : "slider2",
+		  	  	value               : {{ data.slider2 }},
+		  	  	maximum             : 10,
+	    		minimum             : 1,
+		  	  	intermediateChanges : true,
+		  	  	discreteValues      : 10,
+		  	  	style               : {width:"50%", height:"20px"}
+    	'>
+	   		<div data-dojo-type="dijit/form/HorizontalRule"
+	   			data-dojo-props='container:"topDecoration", count:10, style:{height:"5px"}'></div>
+	    </div>
 
 	</template>
 </div>
